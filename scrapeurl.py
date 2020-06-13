@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 import requests
 import re
 from html.parser import HTMLParser
+import html
 from fpdf import FPDF
 import os
 
@@ -34,7 +35,7 @@ poet = poet.a.string
 
 if poemTitle:
 	pdf.add_page()
-	title = parser.unescape(poemTitle.text)
+	title = html.unescape(poemTitle.text)
 	title = title.strip()
 	pdf.set_font("GibsonBold", size=10)
 	pdf.multi_cell(0, 4, txt=title, align="L")
@@ -44,7 +45,7 @@ if poemTitle:
 	poemLines = poemContent.findAll('div')
 	poemBlocks = poemContent.findAll('p')
 	for line in poemLines:
-		text = parser.unescape(line.text)
+		text = html.unescape(line.text)
 		pdf.set_font("Gentium", size=8)
 		l = text
 		l = l.strip()
@@ -55,9 +56,9 @@ if poemTitle:
 		pdf.set_font("Gentium", size=8)
 		p = para.strip()
 		pdf.multi_cell(0, 4, txt=p, align="L")
-	filename = title + ".pdf"
-	filename = filename.encode('utf-8')
+	filenam = title.replace(" ", "") + ".pdf"
+	filename = filenam.encode('utf-8')
 	pdf.output(filename)
-	os.system('lp -o fit-to-page filename')
+	os.system('lp -o ' + str(filenam))
 		
 
