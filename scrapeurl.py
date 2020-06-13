@@ -11,19 +11,20 @@ from __future__ import print_function
 from bs4 import BeautifulSoup
 import requests
 import re
-from html.parser import HTMLParser
+#from html.parser import HTMLParser
 import html
 from fpdf import FPDF
 import os
 
-pdf = FPDF('P', 'mm', (60, 200))
+pdf = FPDF('P', 'mm', (50, 200))
+pdf.set_margins(0, 0)
 pdf.set_auto_page_break(True, margin = 0.0)
 pdf.add_font("Gibson", fname="Gibson-Regular.ttf", uni=True)
 pdf.add_font("GibsonBold", fname="gibson-bold.ttf", uni=True)
 pdf.add_font("Gentium", fname="GentiumPlus-R.ttf", uni=True)
 
 url = input('What poem do you want printed? ')
-parser = HTMLParser()
+#parser = HTMLParser()
 
 
 
@@ -37,28 +38,30 @@ if poemTitle:
 	pdf.add_page()
 	title = html.unescape(poemTitle.text)
 	title = title.strip()
-	pdf.set_font("GibsonBold", size=10)
+	pdf.set_font("GibsonBold", size=12)
 	pdf.multi_cell(0, 4, txt=title, align="L")
+	pdf.ln(2)
 	pdf.set_font("Gibson", size=8)
 	pdf.multi_cell(0, 4, txt=poet.upper(), align="L")
+	pdf.ln(2)
 	poemContent = poemSoup.find('div', {'class' : 'o-poem'})
 	poemLines = poemContent.findAll('div')
 	poemBlocks = poemContent.findAll('p')
 	for line in poemLines:
 		text = html.unescape(line.text)
-		pdf.set_font("Gentium", size=8)
+		pdf.set_font("Gentium", size=10)
 		l = text
 		l = l.strip()
 		pdf.multi_cell(0, 4, txt=l, align="L")
 		
 	for line in poemBlocks:
-		para = parser.unescape(line.text)
-		pdf.set_font("Gentium", size=8)
+		para = html.unescape(line.text)
+		pdf.set_font("Gentium", size=10)
 		p = para.strip()
 		pdf.multi_cell(0, 4, txt=p, align="L")
 	filenam = title.replace(" ", "") + ".pdf"
 	filename = filenam.encode('utf-8')
 	pdf.output(filename)
-	os.system('lp -o ' + str(filenam))
+	os.system('lp ' + str(filenam))
 		
 
